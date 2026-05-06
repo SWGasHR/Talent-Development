@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <title>TD Project Portal</title>
   <link rel="icon" type="image/png" href="department.png">
+  <link rel="preconnect" href="https://workapps.smartsheet.com">
+  <link rel="dns-prefetch" href="https://workapps.smartsheet.com">
   <style>
     body, html {
       margin: 0;
@@ -1020,9 +1022,10 @@
 
         <span class="nav-separator" aria-hidden="true">|</span>
 
-        <a class="nav-item portal-view-link"
-           href="#allHrPersonalTasks"
-           data-view-id="allHrPersonalTasks">
+        <a class="nav-item"
+           href="https://workapps.smartsheet.com/app/wJm2VpWWq27w5cPQ5rc399qrFc"
+           target="_blank"
+           rel="noopener noreferrer">
           All HR Personal Tasks
         </a>
 
@@ -1253,7 +1256,7 @@
         TEMPLATE NOTES
         1. Replace every INSERT_..._HERE value with the correct Smartsheet or SharePoint link.
         2. Keep visible: false on project placeholders until that project/archive should appear in the Projects dropdown.
-        3. The All HR Personal Tasks link is set once below and can stay the same across departments.
+        3. The All HR Personal Tasks link opens the shared WorkApp in a new tab across departments.
         4. swgas.png and department.png should stay in the same GitHub repository folder as this HTML file.
       */
 
@@ -1289,13 +1292,6 @@
         allDepartmentProjects: {
           label: "All TD Projects (View Only)",
           embedSrc: "https://app.smartsheet.com/b/publish?EQBCT=38579bee1de54fbeb7823d9e29a4c6bb",
-          viewOnlyNote: true,
-          refreshNote: false
-        },
-
-        allHrPersonalTasks: {
-          label: "All HR Personal Tasks (View Only)",
-          embedSrc: "https://app.smartsheet.com/b/publish?EQBCT=411b8b11b68440d29c2d27c40b0397ed",
           viewOnlyNote: true,
           refreshNote: false
         }
