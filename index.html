@@ -980,6 +980,95 @@
     .save-modal-button.yes:hover {
       background: #1d1f50;
     }
+
+    /* --- REQUEST ACCESS BUTTON --- */
+    .dropdown-menu a.request-access-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 10px 12px 2px 12px;
+      padding: 11px 12px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #252763 0%, #1d1f50 100%);
+      color: #ffffff;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 7px 16px rgba(37,39,99,0.28);
+      border: 1px solid rgba(37,39,99,0.14);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .dropdown-menu a.request-access-link:hover,
+    .dropdown-menu a.request-access-link:focus {
+      background: linear-gradient(135deg, #30337c 0%, #252763 100%);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(37,39,99,0.34);
+      outline: none;
+    }
+
+    .request-access-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .request-access-icon {
+      width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 18px;
+    }
+
+    .request-access-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display: block;
+    }
+
+    .request-access-text {
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .request-access-arrow {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.16);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 24px;
+      transition: transform 0.18s ease, background-color 0.18s ease;
+    }
+
+    .request-access-arrow svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display: block;
+    }
+
+    .request-access-link:hover .request-access-arrow,
+    .request-access-link:focus .request-access-arrow {
+      transform: translateX(2px);
+      background: rgba(255,255,255,0.24);
+    }
+
   </style>
 </head>
 <body>
@@ -1116,8 +1205,34 @@
               Smartsheet Support
             </a>
 
+            <div class="dropdown-divider"></div>
+
             <a id="jobAidMgrLink" href="INSERT_JOB_AID_MGR_LINK_HERE">Job Aid (MGR)</a>
             <a id="jobAidDirLink" href="INSERT_JOB_AID_DIR_LINK_HERE">Job Aid (DIR)</a>
+
+            <div class="dropdown-divider"></div>
+
+            <a id="requestAccessLink"
+               class="request-access-link"
+               href="#"
+               onclick="openAccessRequestEmail(event)"
+               aria-label="Request access by email">
+              <span class="request-access-left">
+                <span class="request-access-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M4 6h16v12H4z"></path>
+                    <path d="m4 7 8 6 8-6"></path>
+                  </svg>
+                </span>
+                <span class="request-access-text">Request Access</span>
+              </span>
+              <span class="request-access-arrow" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M5 12h13"></path>
+                  <path d="m13 6 6 6-6 6"></path>
+                </svg>
+              </span>
+            </a>
           </div>
         </div>
       </div>
@@ -1467,6 +1582,71 @@
       }
 
       return text.split("(Department Name)").join(PORTAL_CONFIG.departmentName);
+    }
+
+
+    function openAccessRequestEmail(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      const contactEmail = (PORTAL_CONFIG.contactEmail || "").trim();
+
+      if (!contactEmail || isPlaceholderLink(contactEmail)) {
+        alert("The portal contact email has not been configured yet.");
+        return;
+      }
+
+      const route = parseHashRoute() || defaultRoute();
+      const embedData = getEmbedDataForRoute(route);
+      const portalTitle = replaceDepartmentName(PORTAL_CONFIG.portalTitle || document.title || "Smartsheet Project Portal");
+      const departmentName = replaceDepartmentName(PORTAL_CONFIG.departmentName || "Unknown Department");
+      const currentPage = embedData && embedData.label
+        ? replaceDepartmentName(embedData.label)
+        : "Unknown Page/View";
+      const currentUrl = window.location.href;
+      const submittedAt = new Date().toLocaleString();
+
+      const subject = encodeURIComponent("Access Request - " + portalTitle);
+
+      const body = encodeURIComponent(
+        "Hello Ben,
+
+" +
+        "I am requesting access to the Smartsheet portal page listed below.
+
+" +
+        "Portal: " + portalTitle + "
+" +
+        "Department: " + departmentName + "
+" +
+        "Current Page/View: " + currentPage + "
+" +
+        "Page URL: " + currentUrl + "
+" +
+        "Request Date/Time: " + submittedAt + "
+
+" +
+        "Reason for access, optional:
+" +
+        "[Please type reason here]
+
+" +
+        "Thank you!"
+      );
+
+      const mailtoLink =
+        "mailto:" + encodeURIComponent(contactEmail) +
+        "?subject=" + subject +
+        "&body=" + body;
+
+      suppressUnsavedBeforeUnload = true;
+      window.location.href = mailtoLink;
+
+      setTimeout(function() {
+        suppressUnsavedBeforeUnload = false;
+      }, 1500);
     }
 
     function routeKey(route) {
