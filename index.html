@@ -174,7 +174,7 @@
     }
 
     .nav-scroll-shell.no-scroll {
-      overflow: visible;
+      overflow: hidden;
     }
 
     .nav-scroll-shell.no-scroll::before,
@@ -189,6 +189,14 @@
       padding-right: 0;
       overflow-x: hidden;
       scrollbar-gutter: auto;
+    }
+
+    /* Used only for instant, no-flicker overflow measurement in JavaScript. */
+    .nav-scroll-shell.nav-scroll-measuring .nav-scroll-region,
+    .nav-scroll-shell.nav-scroll-measuring .nav-scroll-button,
+    .nav-scroll-shell.nav-scroll-measuring::before,
+    .nav-scroll-shell.nav-scroll-measuring::after {
+      transition: none !important;
     }
 
     .nav-home {
@@ -238,6 +246,14 @@
       user-select: none;
       pointer-events: none;
       text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+    }
+
+    /* Keep top-level navigation labels from shrinking into partial words.
+       If the nav cannot fit, the scroll controls will appear instead. */
+    .nav-scroll-region > .nav-item,
+    .nav-scroll-region > .dropdown,
+    .nav-scroll-region > .nav-separator {
+      flex: 0 0 auto;
     }
 
     .nav-item,
@@ -326,16 +342,106 @@
       margin: 8px 0;
     }
 
+    /* --- SUPPORT REQUEST ACCESS BUTTON --- */
+    .dropdown-menu a.request-access-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin: 10px 12px 4px 12px;
+      padding: 10px 12px;
+      min-height: 46px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #252763 0%, #1d1f50 100%);
+      color: #ffffff;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: 0.1px;
+      box-shadow: 0 7px 16px rgba(37, 39, 99, 0.24);
+      border: 1px solid rgba(255,255,255,0.18);
+      box-sizing: border-box;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    .dropdown-menu a.request-access-button:hover,
+    .dropdown-menu a.request-access-button:focus {
+      background: linear-gradient(135deg, #303381 0%, #252763 100%);
+      color: #ffffff;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(37, 39, 99, 0.30);
+      outline: none;
+    }
+
+    .request-access-left {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .request-access-left > span:last-child {
+      line-height: 1;
+      text-align: center;
+      min-width: 0;
+    }
+
+    .request-access-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.16);
+      flex: 0 0 auto;
+    }
+
+    .request-access-icon svg {
+      width: 13px;
+      height: 13px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.1;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .request-access-arrow {
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.16);
+      flex: 0 0 auto;
+      transition: transform 0.18s ease, background 0.18s ease;
+    }
+
+    .request-access-arrow svg {
+      width: 14px;
+      height: 14px;
+      display: block;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .dropdown-menu a.request-access-button:hover .request-access-arrow,
+    .dropdown-menu a.request-access-button:focus .request-access-arrow {
+      transform: translateX(2px);
+      background: rgba(255,255,255,0.24);
+    }
+
     .caret {
       font-size: 11px;
       line-height: 1;
     }
 
-    .nav-spacer {
-      flex: 1;
-    }
-
-    /* --- TOP NAV MESSAGE POP-UP --- */
     .nav-reminder-slot {
       flex: 0 1 clamp(245px, 28vw, 390px);
       min-width: 245px;
@@ -402,10 +508,6 @@
       white-space: normal;
     }
 
-    .nav-refresh-popover strong {
-      font-weight: 800;
-    }
-
     .nav-refresh-close {
       position: absolute;
       top: -8px;
@@ -439,7 +541,6 @@
       box-shadow: 0 5px 10px rgba(0,0,0,0.25);
       outline: none;
     }
-
 
     .nav-refresh-close svg {
       width: 9px;
@@ -475,17 +576,16 @@
       display: block;
     }
 
-
-
     /* --- CENTER REMINDER BETWEEN SUPPORT AND LOGO --- */
     .top-nav.reminder-visible .nav-scroll-shell.no-scroll {
-      flex: 0 1 auto;
-      max-width: 100%;
+      flex: 1 1 auto;
+      min-width: 0;
+      max-width: none;
     }
 
     .top-nav.reminder-visible .nav-scroll-shell.no-scroll .nav-scroll-region {
-      flex: 0 0 auto;
-      width: auto;
+      flex: 1 1 auto;
+      width: 100%;
       max-width: 100%;
     }
 
@@ -616,7 +716,6 @@
       color: #252763;
     }
 
-
     .archive-empty-message {
       padding: 10px 16px 10px 32px;
       color: #777;
@@ -738,8 +837,6 @@
     .view-only-note strong {
       font-weight: 700;
     }
-
-
 
     /* --- IFRAME AREA --- */
     .iframe-wrap {
@@ -980,95 +1077,6 @@
     .save-modal-button.yes:hover {
       background: #1d1f50;
     }
-
-    /* --- REQUEST ACCESS BUTTON --- */
-    .dropdown-menu a.request-access-link {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin: 10px 12px 2px 12px;
-      padding: 11px 12px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #252763 0%, #1d1f50 100%);
-      color: #ffffff;
-      font-weight: 800;
-      text-decoration: none;
-      box-shadow: 0 7px 16px rgba(37,39,99,0.28);
-      border: 1px solid rgba(37,39,99,0.14);
-      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-    }
-
-    .dropdown-menu a.request-access-link:hover,
-    .dropdown-menu a.request-access-link:focus {
-      background: linear-gradient(135deg, #30337c 0%, #252763 100%);
-      color: #ffffff;
-      transform: translateY(-1px);
-      box-shadow: 0 10px 20px rgba(37,39,99,0.34);
-      outline: none;
-    }
-
-    .request-access-left {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      min-width: 0;
-    }
-
-    .request-access-icon {
-      width: 18px;
-      height: 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex: 0 0 18px;
-    }
-
-    .request-access-icon svg {
-      width: 18px;
-      height: 18px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2.2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      display: block;
-    }
-
-    .request-access-text {
-      line-height: 1;
-      white-space: nowrap;
-    }
-
-    .request-access-arrow {
-      width: 24px;
-      height: 24px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.16);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex: 0 0 24px;
-      transition: transform 0.18s ease, background-color 0.18s ease;
-    }
-
-    .request-access-arrow svg {
-      width: 14px;
-      height: 14px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2.6;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      display: block;
-    }
-
-    .request-access-link:hover .request-access-arrow,
-    .request-access-link:focus .request-access-arrow {
-      transform: translateX(2px);
-      background: rgba(255,255,255,0.24);
-    }
-
   </style>
 </head>
 <body>
@@ -1112,6 +1120,7 @@
         <span class="nav-separator" aria-hidden="true">|</span>
 
         <a class="nav-item"
+           id="allHrPersonalTasksLink"
            href="https://workapps.smartsheet.com/app/wJm2VpWWq27w5cPQ5rc399qrFc"
            target="_blank"
            rel="noopener noreferrer">
@@ -1207,29 +1216,29 @@
 
             <div class="dropdown-divider"></div>
 
-            <a id="jobAidMgrLink" href="INSERT_JOB_AID_MGR_LINK_HERE">Job Aid (MGR)</a>
-            <a id="jobAidDirLink" href="INSERT_JOB_AID_DIR_LINK_HERE">Job Aid (DIR)</a>
+            <a id="jobAidMgrLink" href="INSERT_SUPPORT_LINK_3_HERE">Job Aid (MGR)</a>
+            <a id="jobAidDirLink" href="INSERT_SUPPORT_LINK_4_HERE">Job Aid (DIR)</a>
 
             <div class="dropdown-divider"></div>
 
             <a id="requestAccessLink"
-               class="request-access-link"
+               class="request-access-button"
                href="#"
                onclick="openAccessRequestEmail(event)"
                aria-label="Request access by email">
               <span class="request-access-left">
                 <span class="request-access-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M4 6h16v12H4z"></path>
-                    <path d="m4 7 8 6 8-6"></path>
+                    <rect x="4" y="6" width="16" height="12" rx="2"></rect>
+                    <path d="M4.5 7.5 12 13l7.5-5.5"></path>
                   </svg>
                 </span>
-                <span class="request-access-text">Request Access</span>
+                <span>Request Access</span>
               </span>
               <span class="request-access-arrow" aria-hidden="true">
                 <svg viewBox="0 0 24 24" focusable="false">
-                  <path d="M5 12h13"></path>
-                  <path d="m13 6 6 6-6 6"></path>
+                  <path d="M5 12h12"></path>
+                  <path d="m13 7 5 5-5 5"></path>
                 </svg>
               </span>
             </a>
@@ -1262,12 +1271,12 @@
     </div>
 
     <a class="swgas-logo-link"
-       id="departmentLogoLink"
-       href="INSERT_DEPARTMENT_SHAREPOINT_SITE_URL_HERE"
+       id="departmentSharePointLink"
+       href="#"
        target="_blank"
        rel="noopener noreferrer"
        title="Department SharePoint">
-      <img id="departmentLogo" src="swgas.png" alt="Department Logo" class="swgas-logo">
+      <img id="departmentLogo" src="swgas.png" alt="Department logo" class="swgas-logo">
     </a>
   </div>
 
@@ -1295,7 +1304,6 @@
     To make updates, open the specific project sheet from the Projects menu.
   </div>
 
-
   <div class="iframe-wrap">
     <div class="iframe-pool" id="iframePool"></div>
 
@@ -1313,12 +1321,14 @@
         <h2>Link not added yet</h2>
         <p>
           Please reach out to
-          <a class="placeholder-action-link placeholder-contact-link"
+          <a class="placeholder-action-link"
+             id="placeholderEmailLink"
              href="mailto:Benjamin.Bell@swgas.com?subject=Smartsheet%20Portal%20Link%20Issue">
             Benjamin.Bell@swgas.com
           </a>
           to fix this link, or use the
           <a class="placeholder-action-link"
+             id="placeholderProjectCreationLink"
              href="https://app.smartsheet.com/b/form/019a16dd2b3d7e2d96db9a9e8c1aedc7"
              target="_blank"
              rel="noopener noreferrer">
@@ -1363,36 +1373,56 @@
 
   <script>
     /* ==========================================================
-       EDIT THIS SECTION ONLY FOR DEPARTMENT DETAILS, LINKS, AND PROJECTS
+       SHARED PORTAL SETTINGS
+       These stay the same for every department portal.
+       ========================================================== */
+
+    const SHARED_PORTAL_SETTINGS = {
+      faviconFileName: "department.png",
+      logoFileName: "swgas.png",
+      contactEmail: "Benjamin.Bell@swgas.com",
+      allHrPersonalTasksUrl: "https://workapps.smartsheet.com/app/wJm2VpWWq27w5cPQ5rc399qrFc",
+
+      supportLinks: {
+        projectCreationRequest: "https://app.smartsheet.com/b/form/019a16dd2b3d7e2d96db9a9e8c1aedc7",
+        smartsheetSupport: "https://app.smartsheet.com/b/form/019a16e297d77bd2b18acb36bc27e593",
+        jobAidMgr: "INSERT_JOB_AID_MGR_LINK_HERE",
+        jobAidDir: "INSERT_JOB_AID_DIR_LINK_HERE"
+      }
+    };
+
+    /* ==========================================================
+       DEPARTMENT PORTAL CONFIG
+       Edit this section for each department. Everything below this
+       section is reusable and should not need to change.
        ========================================================== */
 
     const PORTAL_CONFIG = {
       /*
-        TEMPLATE NOTES
-        1. Replace every INSERT_..._HERE value with the correct Smartsheet or SharePoint link.
-        2. Keep visible: false on project placeholders until that project/archive should appear in the Projects dropdown.
-        3. The All HR Personal Tasks link opens the shared WorkApp in a new tab across departments.
-        4. swgas.png and department.png should stay in the same GitHub repository folder as this HTML file.
+        HOW TO USE THIS TEMPLATE
+        1. Change departmentName and departmentSharePointUrl.
+        2. Paste the department-specific Smartsheet published links under views.
+        3. Keep BAU first, then replace the five active project templates as needed.
+        4. Replace or rename the five archive templates when you need archived projects.
+        5. Set visible: true to show a project, or visible: false to keep it hidden.
+        6. Keep id values lowercase with dashes only. Example: "open-enrollment-2026".
+        7. Use "(Department Name)" in labels when you want the template to auto-fill the department name.
+        8. Active projects preload after the first page loads; archive projects do not preload.
+        9. All HR Personal Tasks opens in a new tab and is intentionally not preloaded as an iframe.
       */
 
       portalTitle: "TD Project Portal",
+
       departmentName: "TD",
-      defaultViewId: "home",
 
       departmentSharePointUrl: "https://swgas.sharepoint.com/sites/TalentDevelopment",
-      logoFileName: "swgas.png",
-      faviconFileName: "department.png",
-      contactEmail: "Benjamin.Bell@swgas.com",
 
-      projectCreationRequestUrl: "https://app.smartsheet.com/b/form/019a16dd2b3d7e2d96db9a9e8c1aedc7",
-      smartsheetSupportUrl: "https://app.smartsheet.com/b/form/019a16e297d77bd2b18acb36bc27e593",
-      jobAidMgrUrl: "INSERT_JOB_AID_MGR_LINK_HERE",
-      jobAidDirUrl: "INSERT_JOB_AID_DIR_LINK_HERE",
+      defaultViewId: "home",
 
       views: {
         home: {
           label: "Home",
-          embedSrc: "https://app.smartsheet.com/b/publish?EQBCT=ec459cfed1564a51a49c2fa23518775f",
+          embedSrc: "https://app.smartsheet.com/b/publish?EQBCT=ec459cfed1564a51a49c2fa23518775f,
           viewOnlyNote: false,
           refreshNote: true
         },
@@ -1413,6 +1443,11 @@
       },
 
       projects: [
+        /*
+          Keep BAU first. Then use the five project template slots below
+          for active department projects. Active projects are included in
+          the preload list after the first page loads.
+        */
         {
           id: "bau",
           label: "BAU",
@@ -1420,13 +1455,13 @@
           visible: true
         },
         {
-          id: "succession planning & development plans",
+          id: "succession planning and development plans",
           label: "Succession Planning & Development Plans",
           embedSrc: "https://app.smartsheet.com/b/publish?EQBCT=b28d26edde0145d9ab91518a807c04fc",
           visible: true
         },
         {
-          id: "competency configuration / rollout plan",
+          id: "competency configuration and rollout plan",
           label: "Competency Configuration / Rollout Plan",
           embedSrc: "https://app.smartsheet.com/b/publish?EQBCT=a32b2110d3d5400dac1760825bfa6281",
           visible: true
@@ -1434,46 +1469,57 @@
         {
           id: "project-template-3",
           label: "Project Template 3",
-          embedSrc: "INSERT_PROJECT_TEMPLATE_3_PUBLISH_LINK_HERE",
+          embedSrc: "INSERT_PROJECT_TEMPLATE_3_EMBED_LINK_HERE",
           visible: false
         },
         {
           id: "project-template-4",
           label: "Project Template 4",
-          embedSrc: "INSERT_PROJECT_TEMPLATE_4_PUBLISH_LINK_HERE",
+          embedSrc: "INSERT_PROJECT_TEMPLATE_4_EMBED_LINK_HERE",
+          visible: false
+        },
+        {
+          id: "project-template-5",
+          label: "Project Template 5",
+          embedSrc: "INSERT_PROJECT_TEMPLATE_5_EMBED_LINK_HERE",
           visible: false
         }
       ],
 
       archiveProjects: [
+        /*
+          Archived project templates show in the Archive section when
+          visible is true. Archived projects intentionally do not preload;
+          they load only when selected from the Archive dropdown.
+        */
         {
-          id: "archive-project-1",
-          label: "Archive Project 1",
-          embedSrc: "INSERT_ARCHIVE_PROJECT_1_PUBLISH_LINK_HERE",
+          id: "archive-template-1",
+          label: "Archive Template 1",
+          embedSrc: "INSERT_ARCHIVE_TEMPLATE_1_EMBED_LINK_HERE",
           visible: false
         },
         {
-          id: "archive-project-2",
-          label: "Archive Project 2",
-          embedSrc: "INSERT_ARCHIVE_PROJECT_2_PUBLISH_LINK_HERE",
+          id: "archive-template-2",
+          label: "Archive Template 2",
+          embedSrc: "INSERT_ARCHIVE_TEMPLATE_2_EMBED_LINK_HERE",
           visible: false
         },
         {
-          id: "archive-project-3",
-          label: "Archive Project 3",
-          embedSrc: "INSERT_ARCHIVE_PROJECT_3_PUBLISH_LINK_HERE",
+          id: "archive-template-3",
+          label: "Archive Template 3",
+          embedSrc: "INSERT_ARCHIVE_TEMPLATE_3_EMBED_LINK_HERE",
           visible: false
         },
         {
-          id: "archive-project-4",
-          label: "Archive Project 4",
-          embedSrc: "INSERT_ARCHIVE_PROJECT_4_PUBLISH_LINK_HERE",
+          id: "archive-template-4",
+          label: "Archive Template 4",
+          embedSrc: "INSERT_ARCHIVE_TEMPLATE_4_EMBED_LINK_HERE",
           visible: false
         },
         {
-          id: "archive-project-5",
-          label: "Archive Project 5",
-          embedSrc: "INSERT_ARCHIVE_PROJECT_5_PUBLISH_LINK_HERE",
+          id: "archive-template-5",
+          label: "Archive Template 5",
+          embedSrc: "INSERT_ARCHIVE_TEMPLATE_5_EMBED_LINK_HERE",
           visible: false
         }
       ]
@@ -1507,6 +1553,17 @@
     const navScrollRight = document.getElementById("navScrollRight");
     const navReminderSlot = document.getElementById("navReminderSlot");
     const topNav = document.querySelector(".top-nav");
+    const portalFavicon = document.querySelector('link[rel="icon"]');
+    const allHrPersonalTasksLink = document.getElementById("allHrPersonalTasksLink");
+    const departmentSharePointLink = document.getElementById("departmentSharePointLink");
+    const departmentLogo = document.getElementById("departmentLogo");
+    const projectCreationRequestLink = document.getElementById("projectCreationRequestLink");
+    const smartsheetSupportLink = document.getElementById("smartsheetSupportLink");
+    const jobAidMgrLink = document.getElementById("jobAidMgrLink");
+    const jobAidDirLink = document.getElementById("jobAidDirLink");
+    const requestAccessLink = document.getElementById("requestAccessLink");
+    const placeholderEmailLink = document.getElementById("placeholderEmailLink");
+    const placeholderProjectCreationLink = document.getElementById("placeholderProjectCreationLink");
 
     let projectModeActive = false;
     let pendingNavigationAction = null;
@@ -1545,15 +1602,11 @@
       one time after a likely Smartsheet sign-in return so every iframe reloads
       with the new signed-in session.
     */
-    function getPortalStorageKeyPrefix() {
-      const sourceName = PORTAL_CONFIG.departmentName || "department";
-      const safeName = sourceName.toLowerCase().replace(/[^a-z0-9]+/g, "");
-
-      return (safeName || "department") + "Portal";
-    }
-
-    const AUTH_RETURN_REFRESH_DONE_KEY = getPortalStorageKeyPrefix() + "SmartsheetAuthRefreshDone";
-    const AUTH_RETURN_PENDING_KEY = getPortalStorageKeyPrefix() + "PossibleSmartsheetAuthReturn";
+    const AUTH_STORAGE_PREFIX = String(PORTAL_CONFIG.departmentName || "department")
+      .replace(/[^a-z0-9]/gi, "")
+      .toLowerCase() || "department";
+    const AUTH_RETURN_REFRESH_DONE_KEY = AUTH_STORAGE_PREFIX + "PortalSmartsheetAuthRefreshDone";
+    const AUTH_RETURN_PENDING_KEY = AUTH_STORAGE_PREFIX + "PortalPossibleSmartsheetAuthReturn";
     const AUTH_RETURN_MIN_AWAY_MS = 5000;
     const AUTH_RETURN_MAX_AWAY_MS = 20 * 60 * 1000;
     const IFRAME_INTERACTION_WINDOW_MS = 45000;
@@ -1582,71 +1635,6 @@
       }
 
       return text.split("(Department Name)").join(PORTAL_CONFIG.departmentName);
-    }
-
-
-    function openAccessRequestEmail(event) {
-      if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-
-      const contactEmail = (PORTAL_CONFIG.contactEmail || "").trim();
-
-      if (!contactEmail || isPlaceholderLink(contactEmail)) {
-        alert("The portal contact email has not been configured yet.");
-        return;
-      }
-
-      const route = parseHashRoute() || defaultRoute();
-      const embedData = getEmbedDataForRoute(route);
-      const portalTitle = replaceDepartmentName(PORTAL_CONFIG.portalTitle || document.title || "Smartsheet Project Portal");
-      const departmentName = replaceDepartmentName(PORTAL_CONFIG.departmentName || "Unknown Department");
-      const currentPage = embedData && embedData.label
-        ? replaceDepartmentName(embedData.label)
-        : "Unknown Page/View";
-      const currentUrl = window.location.href;
-      const submittedAt = new Date().toLocaleString();
-
-      const subject = encodeURIComponent("Access Request - " + portalTitle);
-
-      const body = encodeURIComponent(
-        "Hello Ben,
-
-" +
-        "I am requesting access to the Smartsheet portal page listed below.
-
-" +
-        "Portal: " + portalTitle + "
-" +
-        "Department: " + departmentName + "
-" +
-        "Current Page/View: " + currentPage + "
-" +
-        "Page URL: " + currentUrl + "
-" +
-        "Request Date/Time: " + submittedAt + "
-
-" +
-        "Reason for access, optional:
-" +
-        "[Please type reason here]
-
-" +
-        "Thank you!"
-      );
-
-      const mailtoLink =
-        "mailto:" + encodeURIComponent(contactEmail) +
-        "?subject=" + subject +
-        "&body=" + body;
-
-      suppressUnsavedBeforeUnload = true;
-      window.location.href = mailtoLink;
-
-      setTimeout(function() {
-        suppressUnsavedBeforeUnload = false;
-      }, 1500);
     }
 
     function routeKey(route) {
@@ -1712,14 +1700,6 @@
       };
     }
 
-    function isConfigItemVisible(item) {
-      return item && item.visible !== false;
-    }
-
-    function getVisibleProjectList(projectList) {
-      return (projectList || []).filter(isConfigItemVisible);
-    }
-
     function getAllEmbeddableRoutes() {
       const routes = [];
 
@@ -1730,12 +1710,18 @@
         });
       });
 
-      getVisibleProjectList(PORTAL_CONFIG.projects).forEach(function(project) {
+      getVisibleProjects().forEach(function(project) {
         routes.push({
           type: "project",
           id: project.id
         });
       });
+
+      /*
+        Important: archived projects are intentionally excluded from the
+        preload list. They remain clickable from the Archive section and
+        load only when selected.
+      */
 
       return routes;
     }
@@ -2232,9 +2218,20 @@
       }
     }
 
+    function isPortalItemVisible(item) {
+      return item && item.visible !== false;
+    }
+
+    function getVisibleProjects() {
+      return (PORTAL_CONFIG.projects || []).filter(isPortalItemVisible);
+    }
+
+    function getVisibleArchiveProjects() {
+      return (PORTAL_CONFIG.archiveProjects || []).filter(isPortalItemVisible);
+    }
+
     function getProjectById(projectId) {
-      const allProjects = getVisibleProjectList(PORTAL_CONFIG.projects)
-        .concat(getVisibleProjectList(PORTAL_CONFIG.archiveProjects));
+      const allProjects = getVisibleProjects().concat(getVisibleArchiveProjects());
 
       return allProjects.find(function(project) {
         return project.id === projectId;
@@ -2391,11 +2388,11 @@
     function renderProjectLinks() {
       projectLinksContainer.innerHTML = "";
 
-      getVisibleProjectList(PORTAL_CONFIG.projects).forEach(function(project) {
+      getVisibleProjects().forEach(function(project) {
         projectLinksContainer.appendChild(createProjectLink(project, false));
       });
 
-      const archiveProjects = getVisibleProjectList(PORTAL_CONFIG.archiveProjects);
+      const archiveProjects = getVisibleArchiveProjects();
       const archiveDivider = document.createElement("div");
       const archiveButton = document.createElement("button");
       const archiveLabel = document.createElement("span");
@@ -2493,53 +2490,119 @@
       noProjectResults.style.display = visibleCount === 0 ? "block" : "none";
     }
 
-    function setLinkHref(elementId, url) {
-      const link = document.getElementById(elementId);
+    function buildMailtoLink(emailAddress) {
+      const cleanEmail = (emailAddress || "").trim();
 
-      if (!link) {
+      if (!cleanEmail || isPlaceholderLink(cleanEmail)) {
+        return "INSERT_CONTACT_EMAIL_HERE";
+      }
+
+      return "mailto:" + cleanEmail + "?subject=Smartsheet%20Portal%20Link%20Issue";
+    }
+
+    function openAccessRequestEmail(event) {
+      if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+
+      const contactEmail = getPortalContactEmail();
+
+      if (!contactEmail || isPlaceholderLink(contactEmail)) {
+        alert("The portal contact email has not been configured yet.");
         return;
       }
 
-      link.href = url || "#";
+      const route = parseHashRoute() || defaultRoute();
+      const embedData = getEmbedDataForRoute(route);
+      const portalTitle = replaceDepartmentName(PORTAL_CONFIG.portalTitle || document.title || "Smartsheet Project Portal");
+      const departmentName = replaceDepartmentName(PORTAL_CONFIG.departmentName || "Unknown Department");
+      const currentPage = embedData && embedData.label
+        ? replaceDepartmentName(embedData.label)
+        : "Unknown Page/View";
+      const currentUrl = window.location.href;
+      const submittedAt = new Date().toLocaleString();
+      const subject = encodeURIComponent("Access Request - " + portalTitle);
+      const body = encodeURIComponent(
+        "Hello Ben,\n\n" +
+        "I am requesting access to the Smartsheet portal page listed below.\n\n" +
+        "Portal: " + portalTitle + "\n" +
+        "Department: " + departmentName + "\n" +
+        "Current Page/View: " + currentPage + "\n" +
+        "Page URL: " + currentUrl + "\n" +
+        "Request Date/Time: " + submittedAt + "\n\n" +
+        "Reason for access, optional:\n" +
+        "[Please type reason here]\n\n" +
+        "Thank you!"
+      );
+
+      suppressUnsavedBeforeUnload = true;
+      window.location.href = "mailto:" + contactEmail + "?subject=" + subject + "&body=" + body;
+
+      setTimeout(function() {
+        suppressUnsavedBeforeUnload = false;
+      }, 1500);
+    }
+
+    function updateConfiguredLink(linkElement, href, labelText) {
+      if (!linkElement) {
+        return;
+      }
+
+      if (href) {
+        linkElement.href = href;
+      }
+
+      if (labelText) {
+        linkElement.textContent = labelText;
+      }
+    }
+
+    function getSharedSupportLink(linkKey) {
+      const departmentSpecificLinks = PORTAL_CONFIG.supportLinks || {};
+      const sharedLinks = SHARED_PORTAL_SETTINGS.supportLinks || {};
+
+      return departmentSpecificLinks[linkKey] || sharedLinks[linkKey] || "";
+    }
+
+    function getPortalContactEmail() {
+      return (SHARED_PORTAL_SETTINGS.contactEmail || "").trim();
     }
 
     function applyConfigToNavigation() {
-      const pageTitle = replaceDepartmentName(PORTAL_CONFIG.portalTitle || "(Department Name) Project Portal");
+      const resolvedDepartmentName = replaceDepartmentName(PORTAL_CONFIG.departmentName || "Department");
+      const resolvedPortalTitle = replaceDepartmentName(PORTAL_CONFIG.portalTitle || resolvedDepartmentName + " Project Portal");
 
-      if (pageTitle.trim() !== "") {
-        document.title = pageTitle;
+      document.title = resolvedPortalTitle;
+      projectDropdownLabel.textContent = resolvedDepartmentName + " Projects";
+
+      if (portalFavicon && SHARED_PORTAL_SETTINGS.faviconFileName) {
+        portalFavicon.href = SHARED_PORTAL_SETTINGS.faviconFileName;
       }
 
-      const favicon = document.querySelector('link[rel="icon"]');
+      updateConfiguredLink(allHrPersonalTasksLink, SHARED_PORTAL_SETTINGS.allHrPersonalTasksUrl);
+      updateConfiguredLink(departmentSharePointLink, PORTAL_CONFIG.departmentSharePointUrl);
 
-      if (favicon && PORTAL_CONFIG.faviconFileName) {
-        favicon.href = PORTAL_CONFIG.faviconFileName;
+      if (departmentSharePointLink) {
+        departmentSharePointLink.title = resolvedDepartmentName + " SharePoint";
       }
 
-      projectDropdownLabel.textContent = PORTAL_CONFIG.departmentName + " Projects";
-
-      const departmentLogoLink = document.getElementById("departmentLogoLink");
-      const departmentLogo = document.getElementById("departmentLogo");
-
-      if (departmentLogoLink) {
-        departmentLogoLink.href = PORTAL_CONFIG.departmentSharePointUrl || "#";
-        departmentLogoLink.title = PORTAL_CONFIG.departmentName + " SharePoint";
+      if (departmentLogo && SHARED_PORTAL_SETTINGS.logoFileName) {
+        departmentLogo.src = SHARED_PORTAL_SETTINGS.logoFileName;
+        departmentLogo.alt = resolvedDepartmentName + " logo";
       }
 
-      if (departmentLogo) {
-        departmentLogo.src = PORTAL_CONFIG.logoFileName || "swgas.png";
-        departmentLogo.alt = PORTAL_CONFIG.departmentName + " Department Logo";
+      updateConfiguredLink(projectCreationRequestLink, getSharedSupportLink("projectCreationRequest"));
+      updateConfiguredLink(smartsheetSupportLink, getSharedSupportLink("smartsheetSupport"));
+      updateConfiguredLink(jobAidMgrLink, getSharedSupportLink("jobAidMgr"));
+      updateConfiguredLink(jobAidDirLink, getSharedSupportLink("jobAidDir"));
+      updateConfiguredLink(placeholderProjectCreationLink, getSharedSupportLink("projectCreationRequest"));
+
+      if (placeholderEmailLink) {
+        const contactEmail = getPortalContactEmail();
+        placeholderEmailLink.href = buildMailtoLink(contactEmail);
+        placeholderEmailLink.textContent = contactEmail || "INSERT_CONTACT_EMAIL_HERE";
       }
-
-      setLinkHref("projectCreationRequestLink", PORTAL_CONFIG.projectCreationRequestUrl);
-      setLinkHref("smartsheetSupportLink", PORTAL_CONFIG.smartsheetSupportUrl);
-      setLinkHref("jobAidMgrLink", PORTAL_CONFIG.jobAidMgrUrl);
-      setLinkHref("jobAidDirLink", PORTAL_CONFIG.jobAidDirUrl);
-
-      document.querySelectorAll(".placeholder-contact-link").forEach(function(link) {
-        link.href = "mailto:" + PORTAL_CONFIG.contactEmail + "?subject=Smartsheet%20Portal%20Link%20Issue";
-        link.textContent = PORTAL_CONFIG.contactEmail;
-      });
 
       document.querySelectorAll(".portal-view-link").forEach(function(link) {
         const viewId = link.getAttribute("data-view-id");
@@ -2715,7 +2778,14 @@
       const isPortalViewLink = clickedLink.classList.contains("portal-view-link");
       const isProjectViewLink = clickedLink.classList.contains("project-view-link");
       const isPlaceholderActionLink = clickedLink.classList.contains("placeholder-action-link");
+      const isRequestAccessLink = clickedLink.id === "requestAccessLink";
       const href = clickedLink.getAttribute("href");
+
+      if (isRequestAccessLink) {
+        event.preventDefault();
+        openAccessRequestEmail(event);
+        return;
+      }
 
       if (isPlaceholderActionLink) {
         return;
@@ -2781,16 +2851,168 @@
       return paddingLeft + paddingRight;
     }
 
+    function getVisibleNavChildren() {
+      if (!navScrollRegion) {
+        return [];
+      }
+
+      return Array.from(navScrollRegion.children).filter(function(child) {
+        const childStyles = window.getComputedStyle(child);
+
+        return childStyles.display !== "none" && childStyles.visibility !== "hidden";
+      });
+    }
+
+    function getOuterElementWidth(element) {
+      if (!element) {
+        return 0;
+      }
+
+      const styles = window.getComputedStyle(element);
+      const marginLeft = parseFloat(styles.marginLeft) || 0;
+      const marginRight = parseFloat(styles.marginRight) || 0;
+      const rect = element.getBoundingClientRect();
+
+      return rect.width + marginLeft + marginRight;
+    }
+
+    function getNavContentWidthFromChildren() {
+      if (!navScrollRegion) {
+        return 0;
+      }
+
+      return getVisibleNavChildren().reduce(function(totalWidth, child) {
+        return totalWidth + getOuterElementWidth(child);
+      }, 0);
+    }
+
+    function getNavVisibleBounds() {
+      if (!navScrollShell || !navScrollRegion) {
+        return {
+          left: 0,
+          right: 0,
+          width: 0
+        };
+      }
+
+      const shellRect = navScrollShell.getBoundingClientRect();
+      const regionRect = navScrollRegion.getBoundingClientRect();
+      const visibleLeft = Math.max(shellRect.left, regionRect.left);
+      const visibleRight = Math.min(shellRect.right, regionRect.right);
+
+      return {
+        left: visibleLeft,
+        right: visibleRight,
+        width: Math.max(visibleRight - visibleLeft, 0)
+      };
+    }
+
+    function getNavAvailableWidth() {
+      return getNavVisibleBounds().width;
+    }
+
+    function getNavItemTargetElement(child) {
+      if (!child) {
+        return null;
+      }
+
+      return child.classList.contains("dropdown")
+        ? child.querySelector(".dropdown-toggle") || child
+        : child;
+    }
+
+    function measureNavOverflowWithoutScrollControls() {
+      if (!navScrollShell || !navScrollRegion) {
+        return false;
+      }
+
+      const tolerance = 0.5;
+      const hadNoScrollClass = navScrollShell.classList.contains("no-scroll");
+      const originalScrollLeft = navScrollRegion.scrollLeft;
+
+      /*
+        Measure in the true no-scroll state so the 46px arrow padding does not
+        trick the nav into showing arrows when the full navigation already fits.
+      */
+      navScrollShell.classList.add("nav-scroll-measuring");
+      navScrollShell.classList.add("no-scroll");
+      navScrollRegion.scrollLeft = 0;
+
+      void navScrollRegion.offsetWidth;
+
+      const bounds = getNavVisibleBounds();
+      const naturalContentWidth = getNavContentWidthFromChildren();
+      const contentIsTooWide = naturalContentWidth > bounds.width + tolerance;
+      const hasClippedItem = getVisibleNavChildren().some(function(child) {
+        const childRect = child.getBoundingClientRect();
+        const targetElement = getNavItemTargetElement(child);
+        const targetTextIsClipped = targetElement
+          ? targetElement.scrollWidth > targetElement.clientWidth + tolerance
+          : false;
+        const childIsClippedByRegion = childRect.left < bounds.left - tolerance ||
+          childRect.right > bounds.right + tolerance;
+
+        return targetTextIsClipped || childIsClippedByRegion;
+      });
+
+      if (!hadNoScrollClass) {
+        navScrollShell.classList.remove("no-scroll");
+        navScrollRegion.scrollLeft = originalScrollLeft;
+      }
+
+      navScrollShell.classList.remove("nav-scroll-measuring");
+
+      return contentIsTooWide || hasClippedItem;
+    }
+
+    function navHasPartiallyHiddenItems() {
+      return measureNavOverflowWithoutScrollControls();
+    }
+
+    function getNavMaxScrollLeft() {
+      if (!navScrollRegion) {
+        return 0;
+      }
+
+      return Math.max(navScrollRegion.scrollWidth - navScrollRegion.clientWidth, 0);
+    }
+
+    function updateNavArrowStates() {
+      if (!navScrollRegion || !navScrollShell) {
+        return;
+      }
+
+      if (navScrollShell.classList.contains("no-scroll")) {
+        if (navScrollLeft) {
+          navScrollLeft.disabled = true;
+        }
+
+        if (navScrollRight) {
+          navScrollRight.disabled = true;
+        }
+
+        return;
+      }
+
+      const maxScrollLeft = getNavMaxScrollLeft();
+      const atStart = navScrollRegion.scrollLeft <= 2;
+      const atEnd = navScrollRegion.scrollLeft >= maxScrollLeft - 2;
+
+      if (navScrollLeft) {
+        navScrollLeft.disabled = atStart;
+      }
+
+      if (navScrollRight) {
+        navScrollRight.disabled = atEnd;
+      }
+    }
+
     function updateNavScrollControls() {
       if (!navScrollRegion || !navScrollShell) {
         return;
       }
 
-      const horizontalPadding = getNavHorizontalPadding();
-      const naturalContentWidth = Math.max(navScrollRegion.scrollWidth - horizontalPadding, 0);
-      const availableWidthWithoutArrows = navScrollRegion.clientWidth;
-      const topNavOverflows = topNav ? topNav.scrollWidth > topNav.clientWidth + 2 : false;
-      const hasOverflow = naturalContentWidth > availableWidthWithoutArrows + 2 || topNavOverflows;
+      const hasOverflow = measureNavOverflowWithoutScrollControls();
 
       navScrollShell.classList.toggle("no-scroll", !hasOverflow);
 
@@ -2810,40 +3032,62 @@
 
       /* Force the browser to apply the has-scroll padding before reading the scroll limits. */
       void navScrollRegion.offsetWidth;
-
-      const maxScrollLeft = Math.max(navScrollRegion.scrollWidth - navScrollRegion.clientWidth, 0);
-      const atStart = navScrollRegion.scrollLeft <= 2;
-      const atEnd = navScrollRegion.scrollLeft >= maxScrollLeft - 2;
-
-      if (navScrollLeft) {
-        navScrollLeft.disabled = atStart;
-      }
-
-      if (navScrollRight) {
-        navScrollRight.disabled = atEnd;
-      }
+      updateNavArrowStates();
     }
 
     function updateNavScrollControlsSoon() {
       requestAnimationFrame(function() {
         updateNavScrollControls();
-        requestAnimationFrame(updateNavScrollControls);
+        requestAnimationFrame(function() {
+          updateNavScrollControls();
+          setTimeout(updateNavScrollControls, 80);
+          setTimeout(updateNavScrollControls, 260);
+          setTimeout(updateNavScrollControls, 420);
+        });
       });
     }
 
     function scrollNavTopics(direction) {
-      if (!navScrollRegion) {
+      if (!navScrollRegion || !navScrollShell) {
         return;
       }
 
-      const scrollAmount = Math.max(Math.round(navScrollRegion.clientWidth * 0.72), 220);
+      /*
+        Do not use scrollIntoView here. On a flex-based nav it can make tiny
+        "nearest item" jumps and can prevent the user from reaching the full
+        scroll range. A direct scrollLeft target is much more reliable.
+      */
+      navScrollShell.classList.remove("no-scroll");
+      void navScrollRegion.offsetWidth;
 
-      navScrollRegion.scrollBy({
-        left: direction * scrollAmount,
+      const maxScrollLeft = getNavMaxScrollLeft();
+
+      if (maxScrollLeft <= 0) {
+        updateNavScrollControls();
+        return;
+      }
+
+      const currentScrollLeft = navScrollRegion.scrollLeft;
+      const usableWidth = Math.max(navScrollRegion.clientWidth - getNavHorizontalPadding(), 0);
+      const scrollAmount = Math.max(Math.round(usableWidth * 0.82), 260);
+      let targetScrollLeft = direction > 0
+        ? Math.min(currentScrollLeft + scrollAmount, maxScrollLeft)
+        : Math.max(currentScrollLeft - scrollAmount, 0);
+
+      /* If the remaining movement is tiny, finish the trip to the end/start. */
+      if (Math.abs(targetScrollLeft - currentScrollLeft) < 8) {
+        targetScrollLeft = direction > 0 ? maxScrollLeft : 0;
+      }
+
+      navScrollRegion.scrollTo({
+        left: targetScrollLeft,
         behavior: "smooth"
       });
 
-      setTimeout(updateNavScrollControls, 260);
+      setTimeout(updateNavArrowStates, 80);
+      setTimeout(updateNavArrowStates, 260);
+      setTimeout(updateNavArrowStates, 520);
+      setTimeout(positionOpenDropdownMenus, 280);
     }
 
     function positionDropdownMenu(dropdown) {
@@ -2903,7 +3147,7 @@
     if (navScrollRegion) {
       navScrollRegion.addEventListener("scroll", function() {
         positionOpenDropdownMenus();
-        updateNavScrollControls();
+        updateNavArrowStates();
       });
     }
 
@@ -2911,6 +3155,34 @@
       positionOpenDropdownMenus();
       updateNavScrollControlsSoon();
     });
+
+    window.addEventListener("load", function() {
+      updateNavScrollControlsSoon();
+    });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(updateNavScrollControlsSoon);
+    }
+
+    if (window.ResizeObserver && navScrollShell) {
+      const navResizeObserver = new ResizeObserver(function() {
+        updateNavScrollControlsSoon();
+      });
+
+      navResizeObserver.observe(navScrollShell);
+
+      if (topNav) {
+        navResizeObserver.observe(topNav);
+      }
+
+      if (navReminderSlot) {
+        navResizeObserver.observe(navReminderSlot);
+      }
+
+      if (departmentSharePointLink) {
+        navResizeObserver.observe(departmentSharePointLink);
+      }
+    }
 
     applyConfigToNavigation();
     renderProjectLinks();
